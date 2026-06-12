@@ -1,0 +1,47 @@
+version: 2
+
+models:
+
+  - name: fct_mrr_by_school_use_case_country_month
+    description: >
+      Core MRR fact table at the grain of:
+      one row per month, per school use case, per customer country.
+
+      This model represents amortized Monthly Recurring Revenue (MRR),
+      derived from invoice-level billing periods and distributed evenly
+      across covered months.
+
+      This is the primary BI-facing finance table used for SaaS revenue analysis.
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - month
+              - use_case
+              - country
+
+    columns:
+
+      - name: month
+        description: Calendar month (first day of month)
+        tests:
+          - not_null
+
+      - name: use_case
+        description: School segmentation use case (B2B, B2C, corporate training, etc.)
+        tests:
+          - not_null
+
+      - name: country
+        description: Customer country associated with revenue
+        tests:
+          - not_null
+
+      - name: mrr_usd
+        description: Monthly Recurring Revenue allocated to segment
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"

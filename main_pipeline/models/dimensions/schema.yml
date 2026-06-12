@@ -1,0 +1,28 @@
+version: 2
+
+models:
+
+  - name: dim_months
+    description: >
+      Calendar dimension table providing a continuous monthly spine.
+      This table is used as the backbone for time-series aggregation,
+      ensuring consistent month alignment across revenue and subscription models.
+
+      It enables: MRR time-series reporting, gap detection in revenue data, consistent cohort and trend analysis
+
+    columns:
+
+      - name: month_start
+        description: First day of the calendar month (standardized time grain used across all financial models).
+        tests:
+          - unique
+          - not_null
+
+      - name: year
+        description: Calendar year extracted from month_start.
+
+      - name: month_num
+        description: Numeric month (1-12) extracted from month_start.
+
+      - name: year_month
+        description: Human-readable month identifier in YYYY-MM format for BI tools.

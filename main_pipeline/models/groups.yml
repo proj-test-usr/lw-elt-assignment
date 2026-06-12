@@ -1,0 +1,15 @@
+version: 2
+
+groups:
+
+  - name: ingestion
+    owner:
+      name: Analytics Engineering
+
+  - name: transformations
+    owner:
+      name: Analytics Engineering
+
+  - name: reporting
+    owner:
+      name: Finance Analytics

@@ -1,0 +1,97 @@
+version: 2
+
+models:
+
+  - name: stg_invoices
+    description: >
+      Staging model for raw invoice data.
+      Each row represents a single invoice issued to a customer.
+      This model standardizes data types and prepares financial fields for downstream MRR allocation logic.
+
+    columns:
+
+      - name: invoice_id
+        description: Unique identifier for each invoice.
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        description: Foreign key referencing the customer who received the invoice.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+
+      - name: subscription_id
+        description: Foreign key linking the invoice to a subscription.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_subscriptions')
+                field: subscription_id
+
+      - name: product_id
+        description: Product associated with the invoice.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_id
+
+
+  - name: stg_customers
+    description: >
+      Staging model for customer master data.
+      Contains customer identity and commercial attributes such as country and billing method.
+
+    columns:
+
+      - name: customer_id
+        description: Primary key for customers.
+        tests:
+          - unique
+          - not_null
+
+
+  - name: stg_products
+    description: >
+      Product catalog staging table.
+      Defines available subscription products and their billing frequency.
+
+    columns:
+
+      - name: billing_frequency
+        description: >
+          Defines how often a product is billed.
+          Used to validate MRR normalization logic.
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - monthly
+                  - quarterly
+                  - annual
+
+
+  - name: stg_subscriptions
+    description: >
+      Subscription lifecycle staging model.
+      Tracks subscription ownership at school level, billing method, and lifecycle status.
+
+    columns:
+
+      - name: subscription_id
+        description: Unique identifier for each subscription.
+        tests:
+          - unique
+          - not_null
+
+      - name: school_id
+        description: Foreign key linking subscription to a school.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_schools')
+                field: school_id

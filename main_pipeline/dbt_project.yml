@@ -1,0 +1,46 @@
+name: 'main_pipeline'
+version: '0.1.0'
+
+# This dbt project implements a SaaS analytics pipeline that transforms
+# raw billing and subscription data into a finance-grade MRR mart.
+
+profile: 'lw-project'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  main_pipeline:
+
+    staging:
+      +materialized: view
+      +group: ingestion
+      # Lightweight cleaning layer directly on top of raw source tables
+
+    dimensions:
+      +materialized: table
+      +group: transformations
+      # Conformed dimensions (calendar, reusable business entities)
+
+    intermediate:
+      +materialized: view
+      +group: transformations
+      # Business logic and revenue allocation layer
+
+    marts:
+      +materialized: table
+      +group: reporting
+      # Final analytics outputs consumed by BI/reporting
+
+seeds:
+  main_pipeline:
+    +schema: raw
+    # Raw ingestion layer simulating operational SaaS system extracts

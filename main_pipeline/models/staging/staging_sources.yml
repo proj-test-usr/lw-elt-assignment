@@ -1,0 +1,37 @@
+version: 2
+
+sources:
+
+  - name: raw
+    schema: main_raw
+    description: >
+      Raw ingestion layer populated from CSV seeds.
+      This represents the immutable source-of-truth dataset before any transformations.
+
+    tables:
+
+      - name: invoices
+        description: >
+          Raw invoice transactions.
+          Each record represents a billed invoice for a subscription period.
+        columns:
+          - name: invoice_id
+            tests:
+              - not_null
+              - unique
+
+      - name: customers
+        description: Customer master dataset containing account-level attributes.
+
+      - name: products
+        description: Product catalog defining billing models and offerings.
+
+      - name: schools
+        description: >
+          School dimension table containing classification of each school by use case
+          (e.g., B2B, B2C, corporate training, etc.).
+
+      - name: subscriptions
+        description: >
+          Subscription lifecycle table tracking active and cancelled subscriptions
+          tied to schools.

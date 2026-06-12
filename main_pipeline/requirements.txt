@@ -1,0 +1,11 @@
+dbt-adapters
+dbt-common
+dbt-core
+dbt-duckdb
+dbt-extractor
+dbt-protos
+dbt-semantic-interfaces
+duckdb
+numpy
+pandas
+PyYAML

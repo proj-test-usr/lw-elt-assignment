@@ -1,0 +1,89 @@
+version: 2
+
+models:
+
+  - name: int_invoice_bounds
+    description: >
+      Extracts invoice temporal boundaries and standardizes billing period logic.
+      This model defines the time window used for MRR allocation.
+
+    columns:
+      - name: invoice_id
+        tests:
+          - not_null
+
+      - name: billing_start_date
+        tests:
+          - not_null
+
+      - name: billing_end_date
+        tests:
+          - not_null
+
+
+  - name: int_invoice_month_spine
+    description: >
+      Expands invoices into a month-level grain using a calendar spine.
+      Each invoice is represented once per month it spans.
+
+      This is the foundation for MRR amortization.
+
+    columns:
+      - name: invoice_id
+        tests:
+          - not_null
+
+      - name: month_start
+        tests:
+          - not_null
+
+
+  - name: int_invoice_enriched
+    description: >
+      Adds customer, subscription, and school dimensions to invoice-month records.
+      Enables segmentation of revenue by geography and use case.
+
+  - name: int_mrr_allocations
+    description: >
+      Core revenue allocation model.
+      Splits invoice revenue evenly across all months in billing period.
+
+      This is the financial engine of the MRR mart.
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - invoice_id
+              - month
+
+    columns:
+      - name: invoice_id
+        tests:
+          - not_null
+
+      - name: month
+        tests:
+          - not_null
+
+      - name: mrr_usd
+        tests:
+          - not_null
+
+
+  - name: int_mrr_reconciliation
+    description: >
+      Finance validation layer ensuring revenue conservation.
+      Confirms that allocated MRR equals original invoice amounts.
+
+
+  - name: int_subscription_months
+    description: >
+      Expands subscriptions into a monthly grain.
+      Used for lifecycle and churn analysis.
+
+
+  - name: int_subscription_state
+    description: >
+      Standardized subscription lifecycle state model.
+      Defines active vs cancelled flags and normalizes temporal fields.
